@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:icon="@drawable/ic_lock_closed"
+        android:id="@+id/action_rearrange"
+        android:title="@string/action_rearrange"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:icon="@drawable/_ic_import_export"
+        android:id="@+id/action_import_export"
+        android:title="@string/action_import_export"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:icon="@android:drawable/ic_menu_add"
+        android:id="@+id/action_add"
+        android:title="@string/action_add"
+        app:showAsAction="ifRoom"/>
+</menu>

@@ -1,0 +1,82 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'de.evil2000.mqttiles'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'de.evil2000.mqttiles'
+        minSdk 23
+        targetSdk 36
+        versionCode 69
+        versionName "4.4"
+        vectorDrawables.useSupportLibrary = true
+        useLibrary 'org.apache.http.legacy'
+        multiDexEnabled true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lint {
+        abortOnError false
+    }
+
+    buildFeatures {
+        buildConfig = false
+    }
+}
+
+dependencies {
+    // --- AndroidX ---
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.recyclerview:recyclerview:1.3.2'
+    implementation 'androidx.core:core:1.12.0'
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
+    implementation 'androidx.annotation:annotation:1.7.1'
+    implementation 'com.google.android.material:material:1.11.0'
+
+    // --- JSON / serialization ---
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.jayway.jsonpath:json-path:2.4.0'
+
+    // --- MQTT (Eclipse Paho) ---
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5'
+    // Eclipse Paho's org.eclipse.paho.android.service:1.1.1 is EOL (2016) and broken on
+    // Android 14+ (missing RECEIVER_EXPORTED/NOT_EXPORTED flag on registerReceiver).
+    // Using hannesa2's maintained drop-in fork which fixes this. Same API shape; only
+    // the package changes from org.eclipse.paho.android.service.* to info.mqtt.android.service.*
+    implementation 'com.github.hannesa2:paho.mqtt.android:4.5'
+
+    // --- RecyclerView drag-and-drop ---
+    implementation 'com.github.h6ah4i:android-advancedrecyclerview:1.0.0'
+
+    // --- Rhino JS engine ---
+    implementation 'com.faendir.rhino:rhino-android:1.6.0'
+
+    // --- Color picker dialog ---
+    implementation 'com.thebluealliance:spectrum:0.7.1'
+
+    // --- 'Rate this app' prompt ---
+    implementation 'com.github.hotchemi:android-rate:1.0.1'
+
+    // --- Circular progress / SeekArc widget (com.triggertrap.seekarc.*) ---
+    // Vendored from github.com/TriggerTrap/SeekArc (MIT). JitPack build of tag 1.1
+    // fails (Ant-style project), no Maven release exists. Source sits under
+    // src/main/java/com/triggertrap/seekarc/SeekArc.java.
+
+    // --- Zip4j ---
+    implementation 'net.lingala.zip4j:zip4j:1.3.2'
+}

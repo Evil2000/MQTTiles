@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Explicit IDs referenced from Java via R.id.<name> without an owning layout:
+    * itemTagId — key for View#setTag(int, Object) on dynamically built rows
+    * itemId    — id assigned to the label TextView inside each row
+  See MetricMultiSwitchSettingsActivity.
+-->
+<resources>
+    <item name="itemTagId" type="id" />
+    <item name="itemId"    type="id" />
+</resources>

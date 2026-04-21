@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="metric_colors">
+        <item>#ffffff</item>
+        <item>#c0c0c0</item>
+        <item>#808080</item>
+        <item>#606060</item>
+        <item>#ffffc0</item>
+        <item>#ffff80</item>
+        <item>#ffff40</item>
+        <item>#ffc000</item>
+        <item>#c0ffc0</item>
+        <item>#c0ff80</item>
+        <item>#c0ff40</item>
+        <item>#40ff00</item>
+        <item>#408000</item>
+        <item>#c0ffff</item>
+        <item>#80ffff</item>
+        <item>#00c0ff</item>
+        <item>#0080ff</item>
+        <item>#0040c0</item>
+        <item>#ffc0ff</item>
+        <item>#ff80ff</item>
+        <item>#ff40ff</item>
+        <item>#ff00c0</item>
+        <item>#800080</item>
+        <item>#ff4040</item>
+        <item>#ff0040</item>
+        <item>#ff0000</item>
+        <item>#c00040</item>
+    </array>
+</resources>

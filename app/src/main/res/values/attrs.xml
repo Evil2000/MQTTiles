@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="supportsAlpha" format="boolean">
+    </attr>
+    <attr name="corpusId" format="string">
+    </attr>
+    <attr name="corpusVersion" format="string">
+    </attr>
+    <attr name="contentProviderUri" format="string">
+    </attr>
+    <attr name="trimmable" format="boolean">
+    </attr>
+    <attr name="schemaOrgType" format="string">
+    </attr>
+    <attr name="semanticallySearchable" format="boolean">
+    </attr>
+    <attr name="documentMaxAgeSecs" format="integer">
+    </attr>
+    <attr name="perAccountTemplate" format="boolean">
+    </attr>
+    <attr name="paramName" format="string">
+    </attr>
+    <attr name="paramValue" format="string">
+    </attr>
+    <attr name="searchEnabled" format="boolean">
+    </attr>
+    <attr name="searchLabel" format="string">
+    </attr>
+    <attr name="settingsDescription" format="string">
+    </attr>
+    <attr name="defaultIntentAction" format="string">
+    </attr>
+    <attr name="defaultIntentData" format="string">
+    </attr>
+    <attr name="defaultIntentActivity" format="string">
+    </attr>
+    <attr name="allowShortcuts" format="boolean">
+    </attr>
+    <attr name="sectionType">
+        <enum name="icon_uri" value="2" />
+        <enum name="intent_action" value="3" />
+        <enum name="intent_activity" value="8" />
+        <enum name="intent_data" value="4" />
+        <enum name="intent_data_id" value="5" />
+        <enum name="intent_extra_data" value="6" />
+        <enum name="large_icon_uri" value="7" />
+        <enum name="text1" value="0" />
+        <enum name="text2" value="1" />
+        <enum name="thing_proto" value="9" />
+    </attr>
+    <attr name="sectionContent" format="string">
+    </attr>
+    <attr name="inputEnabled" format="boolean">
+    </attr>
+    <attr name="sourceClass">
+        <enum name="contact" value="1" />
+        <enum name="email" value="0" />
+        <enum name="instant_message" value="2" />
+    </attr>
+    <attr name="userInputTag" format="string">
+    </attr>
+    <attr name="userInputSection" format="string">
+    </attr>
+    <attr name="userInputValue" format="string">
+    </attr>
+    <attr name="toAddressesSection" format="string">
+    </attr>
+    <attr name="imageAspectRatioAdjust">
+        <enum name="none" value="0" />
+        <enum name="adjust_height" value="2" />
+        <enum name="adjust_width" value="1" />
+    </attr>
+    <attr name="imageAspectRatio" format="float">
+    </attr>
+    <attr name="circleCrop" format="boolean">
+    </attr>
+    <attr name="sectionId" format="string">
+    </attr>
+    <attr name="sectionFormat">
+        <enum name="html" value="1" />
+        <enum name="plain" value="0" />
+        <enum name="rfc822" value="2" />
+        <enum name="url" value="3" />
+    </attr>
+    <attr name="noIndex" format="boolean">
+    </attr>
+    <attr name="sectionWeight" format="integer">
+    </attr>
+    <attr name="indexPrefixes" format="boolean">
+    </attr>
+    <attr name="subsectionSeparator" format="string">
+    </attr>
+    <attr name="schemaOrgProperty" format="string">
+    </attr>
+    <attr name="featureType">
+        <enum name="demote_common_words" value="2" />
+        <enum name="demote_rfc822_hostnames" value="3" />
+        <enum name="index_entity_types" value="6" />
+        <enum name="match_global_nicknames" value="1" />
+        <enum name="omnibox_title_section" value="5" />
+        <enum name="omnibox_url_section" value="4" />
+    </attr>
+    <attr name="thumb" format="reference">
+    </attr>
+    <attr name="thumbOffset" format="dimension">
+    </attr>
+    <attr name="max" format="integer">
+    </attr>
+    <attr name="progressWidth" format="dimension">
+    </attr>
+    <attr name="arcWidth" format="dimension">
+    </attr>
+    <attr name="progress" format="integer">
+    </attr>
+    <attr name="rotation" format="integer">
+    </attr>
+    <attr name="startAngle" format="integer">
+    </attr>
+    <attr name="sweepAngle" format="integer">
+    </attr>
+    <attr name="arcColor" format="color">
+    </attr>
+    <attr name="progressColor" format="color">
+    </attr>
+    <attr name="roundEdges" format="boolean">
+    </attr>
+    <attr name="touchInside" format="boolean">
+    </attr>
+    <attr name="clockwise" format="boolean">
+    </attr>
+    <attr name="seekArcStyle" format="reference">
+    </attr>
+    <attr name="buttonSize" format="reference">
+        <enum name="icon_only" value="2" />
+        <enum name="standard" value="0" />
+        <enum name="wide" value="1" />
+    </attr>
+    <attr name="colorScheme" format="reference">
+        <enum name="auto" value="2" />
+        <enum name="dark" value="0" />
+        <enum name="light" value="1" />
+    </attr>
+    <attr name="scopeUris" format="reference|string">
+    </attr>
+
+    <!-- Styleable grouping so vendored SeekArc.java can resolve R.styleable.SeekArc_*.
+         The individual <attr> definitions above are kept intact (layouts reference them
+         directly); this block only pulls them into a named group. -->
+    <declare-styleable name="SeekArc">
+        <attr name="thumb" />
+        <attr name="thumbOffset" />
+        <attr name="max" />
+        <attr name="progressWidth" />
+        <attr name="arcWidth" />
+        <attr name="progress" />
+        <attr name="rotation" />
+        <attr name="startAngle" />
+        <attr name="sweepAngle" />
+        <attr name="arcColor" />
+        <attr name="progressColor" />
+        <attr name="roundEdges" />
+        <attr name="touchInside" />
+        <attr name="clockwise" />
+        <attr name="enabled" />
+    </declare-styleable>
+
+    <declare-styleable name="SeekArcTheme">
+        <attr name="seekArcStyle" />
+    </declare-styleable>
+</resources>
