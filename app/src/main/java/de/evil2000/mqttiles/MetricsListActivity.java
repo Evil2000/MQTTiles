@@ -619,6 +619,22 @@ public class MetricsListActivity extends AppCompatActivity implements MqttCallba
     }
 
     /**
+     * Return the per-metric JS scratch object used by {@code event.data}, creating a fresh
+     * empty native JS object on first access and caching it in {@link App#javaScriptMap}.
+     * This lets hooks use {@code event.data['key'] = value} directly — the returned object
+     * is live, so indexed/dot writes persist across all hook invocations on the same tile.
+     */
+    public Object getOrCreateJsData(MetricBasic m) {
+        App app = (App) getApplication();
+        Object o = app.javaScriptMap.get(m.id);
+        if (o == null) {
+            o = this.jsContext.newObject(this.jsScope);
+            app.javaScriptMap.put(m.id, o);
+        }
+        return o;
+    }
+
+    /**
      * Return the persistent per-metric scope used by all three JS hooks on that metric,
      * creating it on first use. Chained under {@link #jsScope} so {@code app}/standard
      * bindings are visible; {@code var} declarations by hooks live here and persist
@@ -1376,6 +1392,7 @@ public class MetricsListActivity extends AppCompatActivity implements MqttCallba
             MetricBasic m = mMetricsAdapter.metrics.get(groupId);
             if (m instanceof MetricBasicMqtt) unsubscribe(((MetricBasicMqtt) m).topic);
             jsScopesByMetricId.remove(m.id);
+            ((App) getApplication()).javaScriptMap.remove(m.id);
             mMetricsAdapter.metrics.remove(groupId);
             saveMetrics(mMetricsAdapter.metrics);
             mAdapter.notifyItemRemoved(groupId);
@@ -1473,8 +1490,9 @@ public class MetricsListActivity extends AppCompatActivity implements MqttCallba
             }
             this.mMetricsAdapter.metrics.remove(idx);
             this.mMetricsAdapter.metrics.add(idx, updated);
-            // JS source may have changed: drop the persistent scope so stale vars don't linger.
+            // JS source may have changed: drop the persistent scope and data so stale vars don't linger.
             jsScopesByMetricId.remove(updated.id);
+            ((App) getApplication()).javaScriptMap.remove(updated.id);
         }
         saveMetrics(this.mMetricsAdapter.metrics);
         afterMetricEdit();

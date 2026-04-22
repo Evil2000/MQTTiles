@@ -29,7 +29,7 @@ public class MetricMqttScriptableOnReceive {
     public void setPayload(String p) { this.mPayload = p; }
 
     public Object getData() {
-        return ((App) this.mMetricsListActivity.getApplication()).javaScriptMap.get(this.mMetric.id);
+        return this.mMetricsListActivity.getOrCreateJsData(this.mMetric);
     }
     public void setData(Object data) {
         ((App) this.mMetricsListActivity.getApplication()).javaScriptMap.put(this.mMetric.id, data);

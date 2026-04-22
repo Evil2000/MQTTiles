@@ -40,9 +40,10 @@ public class MetricBasicScriptableOnDisplay {
     public void setLastActivityString(String s)   { this.mLastActivityString = s; }
     public void setName(String s)                 { this.mName = s; }
 
-    /** Read the per-metric scratch slot shared across JS hook invocations. */
+    /** Read the per-metric scratch slot (auto-created on first access so
+     *  {@code event.data['key'] = value} just works). */
     public Object getData() {
-        return ((App) this.mMetricsListActivity.getApplication()).javaScriptMap.get(this.mMetric.id);
+        return this.mMetricsListActivity.getOrCreateJsData(this.mMetric);
     }
 
     /** Write the per-metric scratch slot (survives across hook invocations for this metric). */
