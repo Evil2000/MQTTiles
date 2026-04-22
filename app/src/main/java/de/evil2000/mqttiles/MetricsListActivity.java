@@ -56,7 +56,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ImporterTopLevel;
-import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
@@ -611,13 +610,6 @@ public class MetricsListActivity extends AppCompatActivity implements MqttCallba
     // Rhino JS helpers
     // =========================================================================================
 
-    public Scriptable getJsScope() {
-        Scriptable s = this.jsContext.newObject(this.jsScope);
-        s.setPrototype(this.jsScope);
-        s.setParentScope(null);
-        return s;
-    }
-
     /**
      * Return the per-metric JS scratch object used by {@code event.data}, creating a fresh
      * empty native JS object on first access and caching it in {@link App#javaScriptMap}.
@@ -658,10 +650,6 @@ public class MetricsListActivity extends AppCompatActivity implements MqttCallba
         return scope;
     }
 
-    public Script jsCompile(String src, String name) {
-        return this.jsContext.compileString(src, name, 1, null);
-    }
-
     public String jsEval(String src, Scriptable scope, String name) {
         Object o = this.jsContext.evaluateString(scope, src, name, 1, null);
         return o != null ? Context.toString(o) : "";
@@ -669,15 +657,6 @@ public class MetricsListActivity extends AppCompatActivity implements MqttCallba
 
     public boolean jsEvalBooleanExpression(String src, Scriptable scope, String name) {
         return Context.toBoolean(this.jsContext.evaluateString(scope, src, name, 1, null));
-    }
-
-    public String jsExec(Script script, Scriptable scope) {
-        Object o = script.exec(Context.getCurrentContext(), scope);
-        return o != null ? Context.toString(o) : "";
-    }
-
-    public boolean jsExecBooleanExpression(Script script, Scriptable scope) {
-        return Context.toBoolean(script.exec(Context.getCurrentContext(), scope));
     }
 
     /**

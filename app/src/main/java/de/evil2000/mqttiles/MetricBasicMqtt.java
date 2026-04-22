@@ -3,8 +3,6 @@ package de.evil2000.mqttiles;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Predicate;
 
-import org.mozilla.javascript.Script;
-
 import java.util.Date;
 import java.util.List;
 
@@ -43,7 +41,6 @@ public class MetricBasicMqtt extends MetricBasic {
 
     // --- JS on-receive hook ---
     public String jsOnReceive = "";
-    public transient Script jsOnReceiveCompiled = null;
     public transient String lastJsOnReceiveExceptionMessage = "";
     public transient String lastJsOnReceiveExceptionDetail = "";
     public transient String lastJSONExceptionMessage = "";

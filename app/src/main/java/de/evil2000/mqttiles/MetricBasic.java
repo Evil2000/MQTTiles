@@ -3,7 +3,6 @@ package de.evil2000.mqttiles;
 import android.text.format.DateUtils;
 
 import org.mozilla.javascript.RhinoException;
-import org.mozilla.javascript.Script;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -14,8 +13,6 @@ import java.util.UUID;
  * Common fields shared by every dashboard tile (MQTT or not).
  *
  * Concrete subclasses (see {@link #type} constants) add domain-specific fields.
- * Rhino-compiled handler references ({@code jsOn*Compiled}) are transient so they
- * are re-compiled on demand after a Gson reload.
  */
 public class MetricBasic {
 
@@ -34,14 +31,12 @@ public class MetricBasic {
     public int    type   = METRIC_TYPE_UNKNOWN;
     public String id     = UUID.randomUUID().toString();
 
-    // --- JS hooks: source text is persisted, compiled {@link Script} is lazy + transient. ---
+    // --- JS hooks: source text is persisted, last-exception state is transient. ---
     public String jsOnDisplay = "";
-    public transient Script jsOnDisplayCompiled = null;
     public transient String lastJsOnDisplayExceptionMessage = "";
     public transient String lastJsOnDisplayExceptionDetail = "";
 
     public String jsOnTap = "";
-    public transient Script jsOnTapCompiled = null;
     public transient String lastJsOnTapExceptionMessage = "";
     public transient String lastJsOnTapExceptionDetail = "";
 
@@ -51,7 +46,6 @@ public class MetricBasic {
     public   transient int   blinkState = 0;
 
     public String jsBlinkExpression = "";
-    public transient Script jsBlinkExpressionCompiled = null;
     public transient String lastJsBlinkExpressionExceptionMessage = "";
     public transient String lastJsBlinkExpressionExceptionDetail = "";
 
