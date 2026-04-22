@@ -72,6 +72,7 @@
     <string name="cant_load_saved_metrics">Can\'t load saved metrics</string>
     <string name="cant_reset_progress">Can\'t reset metrics progress</string>
     <string name="cant_save_metrics">Can\'t save metrics: </string>
+    <string name="javascript_error">JavaScript error</string>
     <string name="cant_subscribe_connection_issues">Can\'t subscribe: connection issues</string>
     <string name="choose_type">Choose type</string>
     <string name="client_id">Client ID (must be unique)</string>

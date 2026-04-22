@@ -74,6 +74,7 @@
     <string name="cant_load_saved_metrics">Gespeicherte Metriken nicht ladbar</string>
     <string name="cant_reset_progress">Fortschritt kann nicht zurückgesetzt werden</string>
     <string name="cant_save_metrics">Metriken können nicht gespeichert werden: </string>
+    <string name="javascript_error">JavaScript-Fehler</string>
     <string name="cant_subscribe_connection_issues">Abo nicht möglich: Verbindungsfehler</string>
     <string name="choose_type">Typ wählen</string>
     <string name="client_id">Client-ID (eindeutig)</string>

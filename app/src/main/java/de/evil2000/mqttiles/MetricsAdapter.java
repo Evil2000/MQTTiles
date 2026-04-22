@@ -222,6 +222,12 @@ public class MetricsAdapter extends RecyclerView.Adapter<MetricsAdapter.ViewHold
         return new ViewHolder(tile, v -> {
             MetricBasic tagged = (MetricBasic) v.getTag(R.string.TAG_METRIC);
             if (tagged == null) return;
+            // A stored JS error always wins: tapping opens the details popup, even on
+            // read-only (enablePub=false) tiles where the default handler would no-op.
+            if (currentJsErrorShort(tagged) != null) {
+                activity.showJsErrorDialog(tagged);
+                return;
+            }
             // Publishing disabled → read-only tile; short-tap does nothing. Images are exempt:
             // they never publish, but their click handler opens a URL or the enlarged popup.
             if (tagged instanceof MetricBasicMqtt
@@ -247,6 +253,7 @@ public class MetricsAdapter extends RecyclerView.Adapter<MetricsAdapter.ViewHold
 
     /** Dispatch a click to {@link MetricsListActivity#MetricClickHandler} with the right subtype. */
     private static void dispatchClick(MetricsListActivity activity, MetricBasic m, View tile) {
+        if (currentJsErrorShort(m) != null) { activity.showJsErrorDialog(m); return; }
         if (m instanceof MetricText)        activity.MetricClickHandler((MetricText) m, tile);
         else if (m instanceof MetricSwitch) activity.MetricClickHandler((MetricSwitch) m, tile);
         else if (m instanceof MetricRange)  activity.MetricClickHandler((MetricRange) m, tile);
@@ -270,8 +277,10 @@ public class MetricsAdapter extends RecyclerView.Adapter<MetricsAdapter.ViewHold
             mMetricsListActivity.addConstToJsScope(scope, app, "app");
             mMetricsListActivity.jsEval(m.jsOnDisplay, scope, "<OnDisplay>");
             m.lastJsOnDisplayExceptionMessage = "";
+            m.lastJsOnDisplayExceptionDetail  = "";
         } catch (Exception e) {
-            m.lastJsOnDisplayExceptionMessage = e.toString();
+            m.lastJsOnDisplayExceptionMessage = MetricBasic.formatJsErrorShort(e);
+            m.lastJsOnDisplayExceptionDetail  = MetricBasic.formatJsErrorDetail(e);
         }
     }
 
@@ -339,9 +348,32 @@ public class MetricsAdapter extends RecyclerView.Adapter<MetricsAdapter.ViewHold
             case MetricBasic.METRIC_TYPE_COLOR:        bindColor(tile, (MetricColor) m); break;
             default: break;
         }
+
+        applyJsErrorOverlay(tile, m);
     }
 
-    /** Bottom-line text: either the last-activity relative time, or an error / error tag. */
+    /**
+     * If the metric has a stored JS error, show the full-tile {@code logTextView} overlay with
+     * a red background and the error message; otherwise hide it. Every tile layout provides
+     * this match_parent overlay for exactly this purpose.
+     */
+    private void applyJsErrorOverlay(View tile, MetricBasic m) {
+        TextView overlay = tile.findViewById(R.id.logTextView);
+        if (overlay == null) return;
+        String err = currentJsErrorShort(m);
+        if (err == null) {
+            overlay.setVisibility(View.GONE);
+            return;
+        }
+        overlay.setBackgroundResource(R.color.colorTile);
+        overlay.setGravity(android.view.Gravity.CENTER);
+        overlay.setTextColor(0xFFFF6E6E);
+        overlay.setTextSize(14f);
+        overlay.setText(err);
+        overlay.setVisibility(View.VISIBLE);
+    }
+
+    /** Bottom-line text: image download error (if any) > last-activity relative time. */
     private static String bottomLineFor(MetricBasic m) {
         if (m instanceof MetricImage) {
             MetricImage im = (MetricImage) m;
@@ -350,6 +382,23 @@ public class MetricsAdapter extends RecyclerView.Adapter<MetricsAdapter.ViewHold
             }
         }
         return m.getLastActivityDateTimeString();
+    }
+
+    /** Return the first non-empty JS exception message for any hook on this metric, or null. */
+    static String currentJsErrorShort(MetricBasic m) {
+        if (m instanceof MetricBasicMqtt) {
+            String s = ((MetricBasicMqtt) m).lastJsOnReceiveExceptionMessage;
+            if (s != null && s.length() > 0) return s;
+        }
+        if (m.lastJsOnDisplayExceptionMessage != null
+                && m.lastJsOnDisplayExceptionMessage.length() > 0) {
+            return m.lastJsOnDisplayExceptionMessage;
+        }
+        if (m.lastJsOnTapExceptionMessage != null
+                && m.lastJsOnTapExceptionMessage.length() > 0) {
+            return m.lastJsOnTapExceptionMessage;
+        }
+        return null;
     }
 
     private void bindText(View tile, MetricText m) {

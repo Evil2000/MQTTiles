@@ -45,6 +45,7 @@ public class MetricBasicMqtt extends MetricBasic {
     public String jsOnReceive = "";
     public transient Script jsOnReceiveCompiled = null;
     public transient String lastJsOnReceiveExceptionMessage = "";
+    public transient String lastJsOnReceiveExceptionDetail = "";
     public transient String lastJSONExceptionMessage = "";
 
     MetricBasicMqtt() { }

@@ -566,6 +566,7 @@ public class MetricsListActivity extends AppCompatActivity implements MqttCallba
                         || ((MetricImage) mm).kind == MetricImage.IMAGE_URL_IN_PAYLOAD)
                         ? msg.toString() : "";
                 mm.lastJsOnReceiveExceptionMessage = "";
+                mm.lastJsOnReceiveExceptionDetail  = "";
                 mm.lastJSONExceptionMessage       = "";
 
                 if (mm.type == MetricBasic.METRIC_TYPE_IMAGE) {
@@ -590,7 +591,9 @@ public class MetricsListActivity extends AppCompatActivity implements MqttCallba
                         jsEval(mm.jsOnReceive, scope, "<OnReceive>");
                         mm.messageReceived(ev.getPayload());
                     } catch (Exception e) {
-                        mm.lastJsOnReceiveExceptionMessage = e.toString();
+                        mm.lastJsOnReceiveExceptionMessage = MetricBasic.formatJsErrorShort(e);
+                        mm.lastJsOnReceiveExceptionDetail  = MetricBasic.formatJsErrorDetail(e);
+                        mAdapter.notifyItemChanged(i);
                     }
                 }
 
@@ -833,11 +836,63 @@ public class MetricsListActivity extends AppCompatActivity implements MqttCallba
             addConstToJsScope(scope, ev,  "event");
             addConstToJsScope(scope, app, "app");
             jsEval(metric.jsOnTap, scope, "<OnTap>");
+            metric.lastJsOnTapExceptionMessage = "";
+            metric.lastJsOnTapExceptionDetail  = "";
             return ev.getPreventDefault();
         } catch (Exception e) {
-            Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-            return false;
+            metric.lastJsOnTapExceptionMessage = MetricBasic.formatJsErrorShort(e);
+            metric.lastJsOnTapExceptionDetail  = MetricBasic.formatJsErrorDetail(e);
+            int idx = mMetricsAdapter.metrics.indexOf(metric);
+            if (idx >= 0) mAdapter.notifyItemChanged(idx);
+            showJsErrorDialog(metric);
+            return true;
         }
+    }
+
+    /** Show the metric's most recent JS error: hook name, message, and source location. */
+    public void showJsErrorDialog(MetricBasic metric) {
+        String hook;
+        String message;
+        String location;
+        MetricBasicMqtt mm = (metric instanceof MetricBasicMqtt) ? (MetricBasicMqtt) metric : null;
+        if (mm != null
+                && mm.lastJsOnReceiveExceptionMessage != null
+                && mm.lastJsOnReceiveExceptionMessage.length() > 0) {
+            hook     = getString(R.string.on_receive);
+            message  = mm.lastJsOnReceiveExceptionMessage;
+            location = mm.lastJsOnReceiveExceptionDetail;
+        } else if (metric.lastJsOnDisplayExceptionMessage != null
+                && metric.lastJsOnDisplayExceptionMessage.length() > 0) {
+            hook     = getString(R.string.on_display);
+            message  = metric.lastJsOnDisplayExceptionMessage;
+            location = metric.lastJsOnDisplayExceptionDetail;
+        } else if (metric.lastJsOnTapExceptionMessage != null
+                && metric.lastJsOnTapExceptionMessage.length() > 0) {
+            hook     = getString(R.string.on_tap);
+            message  = metric.lastJsOnTapExceptionMessage;
+            location = metric.lastJsOnTapExceptionDetail;
+        } else {
+            return;
+        }
+
+        StringBuilder body = new StringBuilder(hook).append('\n').append(message);
+        if (location != null && !location.isEmpty()) body.append('\n').append(location);
+
+        android.widget.TextView tv = new android.widget.TextView(this);
+        tv.setText(body.toString());
+        tv.setTextIsSelectable(true);
+        tv.setTypeface(android.graphics.Typeface.MONOSPACE);
+        int pad = (int) (12 * getResources().getDisplayMetrics().density);
+        tv.setPadding(pad, pad, pad, pad);
+
+        android.widget.ScrollView sv = new android.widget.ScrollView(this);
+        sv.addView(tv);
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.javascript_error)
+                .setView(sv)
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
     }
 
     /** Text tile: show a small popup with prefix/value/postfix and optional set-button. */

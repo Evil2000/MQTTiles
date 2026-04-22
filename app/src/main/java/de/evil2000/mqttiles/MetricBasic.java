@@ -2,8 +2,11 @@ package de.evil2000.mqttiles;
 
 import android.text.format.DateUtils;
 
+import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Script;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Date;
 import java.util.UUID;
 
@@ -35,10 +38,12 @@ public class MetricBasic {
     public String jsOnDisplay = "";
     public transient Script jsOnDisplayCompiled = null;
     public transient String lastJsOnDisplayExceptionMessage = "";
+    public transient String lastJsOnDisplayExceptionDetail = "";
 
     public String jsOnTap = "";
     public transient Script jsOnTapCompiled = null;
     public transient String lastJsOnTapExceptionMessage = "";
+    public transient String lastJsOnTapExceptionDetail = "";
 
     /** Blink state machine toggled by {@link #timer()}. */
     public transient boolean blink = false;
@@ -48,6 +53,7 @@ public class MetricBasic {
     public String jsBlinkExpression = "";
     public transient Script jsBlinkExpressionCompiled = null;
     public transient String lastJsBlinkExpressionExceptionMessage = "";
+    public transient String lastJsBlinkExpressionExceptionDetail = "";
 
     /** Epoch seconds of last MQTT / image activity; 0 = never. */
     public long lastActivity = 0;
@@ -101,5 +107,42 @@ public class MetricBasic {
             this.blinkLastTime = now;
             this.blinkState = (this.blinkState != 1) ? 1 : 0;
         }
+    }
+
+    /** Short, single-line JS error suitable for display on a tile. */
+    public static String formatJsErrorShort(Throwable e) {
+        if (e == null) return "";
+        String m = e.getLocalizedMessage();
+        if (m == null || m.isEmpty()) m = e.toString();
+        int nl = m.indexOf('\n');
+        return nl >= 0 ? m.substring(0, nl) : m;
+    }
+
+    /**
+     * Location info for an AlertDialog. For Rhino errors, just {@code at <src>:<line>:<col>}
+     * plus the offending source line if available; for other throwables, the Java stack trace.
+     * Does not repeat the error message (that is shown separately).
+     */
+    public static String formatJsErrorDetail(Throwable e) {
+        if (e == null) return "";
+        StringBuilder sb = new StringBuilder();
+        if (e instanceof RhinoException) {
+            RhinoException re = (RhinoException) e;
+            String name = re.sourceName();
+            if (name != null && !name.isEmpty()) {
+                sb.append("at ").append(name).append(':').append(re.lineNumber());
+                if (re.columnNumber() > 0) sb.append(':').append(re.columnNumber());
+            }
+            String lineSrc = re.lineSource();
+            if (lineSrc != null && !lineSrc.isEmpty()) {
+                if (sb.length() > 0) sb.append('\n');
+                sb.append("  ").append(lineSrc);
+            }
+        } else {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            sb.append(sw);
+        }
+        return sb.toString();
     }
 }
