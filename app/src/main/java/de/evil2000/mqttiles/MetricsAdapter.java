@@ -272,7 +272,7 @@ public class MetricsAdapter extends RecyclerView.Adapter<MetricsAdapter.ViewHold
         if (m.jsOnDisplay == null || m.jsOnDisplay.trim().length() == 0) return;
         try {
             AppScriptable app = new AppScriptable(mMetricsListActivity, mMetricsListActivity);
-            Scriptable scope = mMetricsListActivity.getJsScope();
+            Scriptable scope = mMetricsListActivity.getJsScopeFor(m);
             mMetricsListActivity.addConstToJsScope(scope, scriptableEvent, "event");
             mMetricsListActivity.addConstToJsScope(scope, app, "app");
             mMetricsListActivity.jsEval(m.jsOnDisplay, scope, "<OnDisplay>");

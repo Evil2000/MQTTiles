@@ -142,6 +142,9 @@ public class MetricsListActivity extends AppCompatActivity implements MqttCallba
     public RhinoAndroidHelper js        = null;
     public Context            jsContext = null;
     public Scriptable         jsScope   = null;
+    /** Per-metric persistent scopes so {@code var}s declared in onReceive are visible in
+     *  onDisplay / onTap on the same tile. Keyed by {@link MetricBasic#id}. */
+    private final java.util.HashMap<String, Scriptable> jsScopesByMetricId = new java.util.HashMap<>();
 
     // =========================================================================================
     // Lifecycle
@@ -585,7 +588,7 @@ public class MetricsListActivity extends AppCompatActivity implements MqttCallba
                         MetricMqttScriptableOnReceive ev =
                                 new MetricMqttScriptableOnReceive(MetricsListActivity.this, mm, topic, asText);
                         AppScriptable app = new AppScriptable(MetricsListActivity.this, MetricsListActivity.this);
-                        Scriptable scope = getJsScope();
+                        Scriptable scope = getJsScopeFor(mm);
                         addConstToJsScope(scope, ev,  "event");
                         addConstToJsScope(scope, app, "app");
                         jsEval(mm.jsOnReceive, scope, "<OnReceive>");
@@ -615,8 +618,27 @@ public class MetricsListActivity extends AppCompatActivity implements MqttCallba
         return s;
     }
 
+    /**
+     * Return the persistent per-metric scope used by all three JS hooks on that metric,
+     * creating it on first use. Chained under {@link #jsScope} so {@code app}/standard
+     * bindings are visible; {@code var} declarations by hooks live here and persist
+     * across onReceive → onDisplay → onTap calls.
+     */
+    public Scriptable getJsScopeFor(MetricBasic m) {
+        Scriptable s = this.jsScopesByMetricId.get(m.id);
+        if (s == null) {
+            s = this.jsContext.newObject(this.jsScope);
+            s.setPrototype(this.jsScope);
+            s.setParentScope(null);
+            this.jsScopesByMetricId.put(m.id, s);
+        }
+        return s;
+    }
+
     public Scriptable addConstToJsScope(Scriptable scope, Object value, String name) {
-        ScriptableObject.putConstProperty(scope, name, Context.javaToJS(value, scope));
+        // Writable put (not putConstProperty): these bindings are re-set on every hook
+        // invocation in the persistent per-metric scope and const would reject rebinding.
+        ScriptableObject.putProperty(scope, name, Context.javaToJS(value, scope));
         return scope;
     }
 
@@ -832,7 +854,7 @@ public class MetricsListActivity extends AppCompatActivity implements MqttCallba
         try {
             MetricScriptableOnClick ev = new MetricScriptableOnClick(this, metric, tile);
             AppScriptable app = new AppScriptable(this, this);
-            Scriptable scope = getJsScope();
+            Scriptable scope = getJsScopeFor(metric);
             addConstToJsScope(scope, ev,  "event");
             addConstToJsScope(scope, app, "app");
             jsEval(metric.jsOnTap, scope, "<OnTap>");
@@ -1353,6 +1375,7 @@ public class MetricsListActivity extends AppCompatActivity implements MqttCallba
             if (which != DialogInterface.BUTTON_POSITIVE) return;
             MetricBasic m = mMetricsAdapter.metrics.get(groupId);
             if (m instanceof MetricBasicMqtt) unsubscribe(((MetricBasicMqtt) m).topic);
+            jsScopesByMetricId.remove(m.id);
             mMetricsAdapter.metrics.remove(groupId);
             saveMetrics(mMetricsAdapter.metrics);
             mAdapter.notifyItemRemoved(groupId);
@@ -1450,6 +1473,8 @@ public class MetricsListActivity extends AppCompatActivity implements MqttCallba
             }
             this.mMetricsAdapter.metrics.remove(idx);
             this.mMetricsAdapter.metrics.add(idx, updated);
+            // JS source may have changed: drop the persistent scope so stale vars don't linger.
+            jsScopesByMetricId.remove(updated.id);
         }
         saveMetrics(this.mMetricsAdapter.metrics);
         afterMetricEdit();
