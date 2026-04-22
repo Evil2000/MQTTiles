@@ -148,6 +148,33 @@ public class BrokersListActivity extends AppCompatActivity {
         String json = getSharedPreferences(BROKERS_PREFS, 0).getString(BROKERS_DATA, "[]");
         mBrokersList = new Gson().fromJson(json, new TypeToken<ArrayList<Broker>>() {}.getType());
         if (mBrokersList == null) mBrokersList = new ArrayList<>();
+        backfillLongIds();
+    }
+
+    /**
+     * Ensure every broker has a unique non-zero {@link Broker#longId}. RecyclerView requires
+     * unique stable IDs; older data and freshly-added brokers both default to 0.
+     */
+    private void backfillLongIds() {
+        long max = 0;
+        for (Broker b : mBrokersList) if (b.longId > max) max = b.longId;
+        boolean changed = false;
+        java.util.HashSet<Long> seen = new java.util.HashSet<>();
+        for (Broker b : mBrokersList) {
+            if (b.longId == 0 || !seen.add(b.longId)) {
+                b.longId = ++max;
+                seen.add(b.longId);
+                changed = true;
+            }
+        }
+        if (changed) saveData();
+    }
+
+    /** Assign a fresh unique longId to a broker about to be inserted. */
+    private void assignLongId(Broker broker) {
+        long max = 0;
+        for (Broker b : mBrokersList) if (b.longId > max) max = b.longId;
+        broker.longId = max + 1;
     }
 
     /** Persist {@link #mBrokersList} to SharedPreferences. */
@@ -192,6 +219,7 @@ public class BrokersListActivity extends AppCompatActivity {
 
         switch (requestCode) {
             case ADD_BROKER_REQUEST: {
+                assignLongId(broker);
                 mBrokersList.add(broker);
                 if (saveData()) mAdapter.notifyItemInserted(mBrokersList.size() - 1);
                 break;
@@ -202,9 +230,11 @@ public class BrokersListActivity extends AppCompatActivity {
                     if (mBrokersList.get(i).id.equals(broker.id)) { idx = i; break; }
                 }
                 if (idx >= 0) {
+                    broker.longId = mBrokersList.get(idx).longId;
                     mBrokersList.set(idx, broker);
                     if (saveData()) mAdapter.notifyItemChanged(idx);
                 } else {
+                    assignLongId(broker);
                     mBrokersList.add(broker);
                     if (saveData()) mAdapter.notifyItemInserted(mBrokersList.size() - 1);
                 }
