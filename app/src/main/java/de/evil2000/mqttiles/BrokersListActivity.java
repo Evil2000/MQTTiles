@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -343,6 +344,12 @@ public class BrokersListActivity extends AppCompatActivity {
             ImageView iv = d.findViewById(R.id.imageView);
             iv.setImageResource(getResources().getIdentifier(
                     "app_icon", "drawable", getPackageName()));
+            TextView versionTv = d.findViewById(R.id.versionTextView);
+            String versionName = "";
+            try {
+                versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            } catch (android.content.pm.PackageManager.NameNotFoundException ignored) { }
+            versionTv.setText(getString(R.string.version_label, versionName));
             d.show();
             return true;
         }

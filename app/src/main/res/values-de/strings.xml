@@ -52,6 +52,7 @@
     <string name="Switch">Schalter</string>
     <string name="Text">Text</string>
     <string name="about">Über die App</string>
+    <string name="version_label">Version %1$s</string>
     <string name="action_about">Über</string>
     <string name="action_add">Hinzufügen</string>
     <string name="action_done">Fertig</string>
