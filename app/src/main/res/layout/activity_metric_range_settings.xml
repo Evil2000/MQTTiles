@@ -105,103 +105,113 @@
             android:ems="10"
             android:inputType="number"/>
         <GridLayout
-            android:layout_width="250dp"
-            android:layout_height="wrap_content">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:columnCount="4">
             <TextView
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:id="@+id/minTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="0"
-                android:text="@string/min"
-                android:layout_row="0"/>
-            <EditText
-                android:gravity="center_horizontal"
-                android:id="@+id/maxEditText"
-                android:layout_width="60dp"
-                android:layout_height="wrap_content"
-                android:layout_column="6"
-                android:text="100"
-                android:maxLength="10"
-                android:inputType="numberDecimal"
-                android:layout_row="0"/>
+                android:layout_row="0"
+                android:layout_gravity="center_vertical"
+                android:text="@string/min"/>
             <EditText
                 android:gravity="center_horizontal"
                 android:id="@+id/minEditText"
                 android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
+                android:layout_row="0"
+                android:layout_marginStart="8dp"
                 android:text="0"
                 android:maxLength="10"
-                android:inputType="numberDecimal"
-                android:layout_row="0"/>
+                android:inputType="numberDecimal"/>
             <TextView
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:id="@+id/maxTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_column="5"
-                android:text="@string/max"
-                android:layout_row="0"/>
+                android:layout_column="2"
+                android:layout_row="0"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="24dp"
+                android:text="@string/max"/>
+            <EditText
+                android:gravity="center_horizontal"
+                android:id="@+id/maxEditText"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_column="3"
+                android:layout_row="0"
+                android:layout_marginStart="8dp"
+                android:text="100"
+                android:maxLength="10"
+                android:inputType="numberDecimal"/>
             <TextView
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:id="@+id/prefixTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="0"
-                android:text="@string/prefix"
-                android:layout_row="2"/>
-            <Space
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:layout_column="7"
-                android:layout_row="1"/>
+                android:layout_row="1"
+                android:layout_gravity="center_vertical"
+                android:text="@string/prefix"/>
             <EditText
                 android:gravity="center_horizontal"
                 android:id="@+id/prefixEditText"
                 android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
+                android:layout_row="1"
+                android:layout_marginStart="8dp"
                 android:maxLength="10"
-                android:inputType="text"
-                android:layout_row="2"/>
-            <TextView
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/textView4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_column="0"
-                android:text="@string/precision"
-                android:layout_row="3"/>
+                android:inputType="text"/>
             <TextView
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_column="5"
-                android:text="@string/postfix"
-                android:layout_row="2"/>
+                android:layout_column="2"
+                android:layout_row="1"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="24dp"
+                android:text="@string/postfix"/>
             <EditText
                 android:gravity="center_horizontal"
                 android:id="@+id/postfixEditText"
                 android:layout_width="60dp"
                 android:layout_height="wrap_content"
-                android:layout_column="6"
+                android:layout_column="3"
+                android:layout_row="1"
+                android:layout_marginStart="8dp"
                 android:maxLines="1"
                 android:maxLength="10"
-                android:inputType="text"
-                android:layout_row="2"/>
+                android:inputType="text"/>
+        </GridLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/precision"/>
             <EditText
                 android:gravity="center_horizontal"
                 android:id="@+id/precisionEditText"
                 android:layout_width="60dp"
                 android:layout_height="wrap_content"
-                android:layout_column="1"
+                android:layout_marginStart="8dp"
                 android:text="2"
                 android:ems="10"
-                android:inputType="number"
-                android:layout_row="3"/>
-        </GridLayout>
+                android:inputType="number"/>
+        </LinearLayout>
         <CheckBox
             android:id="@+id/displayPayloadCheckBox"
             android:layout_width="wrap_content"

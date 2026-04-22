@@ -137,6 +137,7 @@ public class MetricsAdapter extends RecyclerView.Adapter<MetricsAdapter.ViewHold
             if (refreshTimes) mTimesLastUpdated = now;
             for (int i = 0; i < metrics.size(); i++) {
                 MetricBasic m = metrics.get(i);
+                if (refreshTimes) mMetricsListActivity.evaluateBlinkExpression(m);
                 int prev = m.blinkState;
                 m.timer();
                 if (refreshTimes || prev != m.blinkState) notifyItemChanged(i);
@@ -405,8 +406,7 @@ public class MetricsAdapter extends RecyclerView.Adapter<MetricsAdapter.ViewHold
         TextView valueTv = tile.findViewById(R.id.textView);
         if (valueTv == null) return;
         String raw = (m.jsonPath != null && m.jsonPath.length() > 0) ? m.lastJsonPathValue : m.lastPayload;
-        String shown = (raw == null) ? mMetricsListActivity.getString(R.string.dash)
-                                     : (m.prefix + raw + m.postfix);
+        String shown = (raw == null) ? "" : (m.prefix + raw + m.postfix);
 
         MetricTextScriptableOnDisplay ev =
                 new MetricTextScriptableOnDisplay(mMetricsListActivity, m, shown, tile);
@@ -471,8 +471,7 @@ public class MetricsAdapter extends RecyclerView.Adapter<MetricsAdapter.ViewHold
         if (valueTv != null) valueTv.setText(ev.getText());
         if (arc != null) {
             arc.setProgress((int) ev.getProgress());
-            int color = parseColorOrDefault(ev.getProgressColor(), m.progressColor);
-            if (color != -1) arc.setProgressColor(color);
+            arc.setProgressColor(parseColorOrDefault(ev.getProgressColor(), m.progressColor));
         }
         applyNameAndBlinkOverrides(tile, ev);
     }
@@ -482,7 +481,7 @@ public class MetricsAdapter extends RecyclerView.Adapter<MetricsAdapter.ViewHold
         if (textTv == null) return;
         String payloadCompare = (m.jsonPath != null && m.jsonPath.length() > 0)
                 ? m.lastJsonPathValue : m.lastPayload;
-        String label = mMetricsListActivity.getString(R.string.dash);
+        String label = "";
         if (payloadCompare != null) {
             for (MetricMultiSwitchItem it : m.items) {
                 if (payloadCompare.equals(it.payload)) { label = it.label; break; }

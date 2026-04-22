@@ -680,6 +680,41 @@ public class MetricsListActivity extends AppCompatActivity implements MqttCallba
         return Context.toBoolean(script.exec(Context.getCurrentContext(), scope));
     }
 
+    /**
+     * Evaluate {@link MetricBasic#jsBlinkExpression} against {@code val} (current raw
+     * payload, or JSON-path extraction if set) and {@code secs} (seconds since last
+     * activity), and write the boolean result into {@link MetricBasic#blink}. Empty
+     * expression → blink off. Evaluation errors are surfaced via
+     * {@code lastJsBlinkExpressionException*}.
+     */
+    public void evaluateBlinkExpression(MetricBasic m) {
+        if (m.jsBlinkExpression == null || m.jsBlinkExpression.trim().length() == 0) {
+            m.blink = false;
+            m.lastJsBlinkExpressionExceptionMessage = "";
+            m.lastJsBlinkExpressionExceptionDetail  = "";
+            return;
+        }
+        try {
+            Scriptable scope = getJsScopeFor(m);
+            String val = "";
+            if (m instanceof MetricBasicMqtt) {
+                MetricBasicMqtt mm = (MetricBasicMqtt) m;
+                String raw = (mm.jsonPath == null || mm.jsonPath.length() == 0)
+                        ? mm.lastPayload : mm.lastJsonPathValue;
+                if (raw != null) val = raw;
+            }
+            addConstToJsScope(scope, val, "val");
+            addConstToJsScope(scope, m.getSecondsSinceLastActivity(), "secs");
+            m.blink = jsEvalBooleanExpression(m.jsBlinkExpression, scope, "<BlinkExpression>");
+            m.lastJsBlinkExpressionExceptionMessage = "";
+            m.lastJsBlinkExpressionExceptionDetail  = "";
+        } catch (Exception e) {
+            m.blink = false;
+            m.lastJsBlinkExpressionExceptionMessage = MetricBasic.formatJsErrorShort(e);
+            m.lastJsBlinkExpressionExceptionDetail  = MetricBasic.formatJsErrorDetail(e);
+        }
+    }
+
     // =========================================================================================
     // Persistence
     // =========================================================================================
@@ -989,13 +1024,14 @@ public class MetricsListActivity extends AppCompatActivity implements MqttCallba
         final SeekArc  arc   = content.findViewById(R.id.seekArc);
         Button setButton     = content.findViewById(R.id.setButton);
 
-        value.setText(String.valueOf(metric.getValue()));
+        final String fmt = "%." + metric.decimalPrecision + "f";
+        value.setText(String.format(java.util.Locale.ROOT, fmt, metric.getValue()));
         arc.setProgress((int) metric.getProgress());
         arc.setOnSeekArcChangeListener(new SeekArc.OnSeekArcChangeListener() {
             @Override public void onProgressChanged(SeekArc seekArc, int progress, boolean fromUser) {
                 if (!fromUser) return;
                 float v = metric.minValue + progress * (metric.maxValue - metric.minValue) / 100f;
-                value.setText(String.valueOf(v));
+                value.setText(String.format(java.util.Locale.ROOT, fmt, v));
             }
             @Override public void onStartTrackingTouch(SeekArc seekArc) { }
             @Override public void onStopTrackingTouch(SeekArc seekArc)  { }
